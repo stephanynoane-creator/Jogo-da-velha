@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo da Velha - Edição Púrpura Neon</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap');
+
+        :root {
+            --bg-gradient: radial-gradient(circle at center, #180f2d 0%, #090514 100%);
+            --panel-bg: rgba(30, 21, 55, 0.6);
+            --border-purple: rgba(168, 85, 247, 0.3);
+            --purple-neon: #a855f7;
+            --magenta-neon: #ec4899;
+            --cyan-neon: #06b6d4;
+            --text-glow: 0 0 10px rgba(168, 85, 247, 0.5);
+            --transition-speed: 0.3s;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: #f3f4f6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            overflow-x: hidden;
+        }
+
+        /* Contentor Principal */
+        .game-wrapper {
+            background: var(--panel-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-purple);
+            border-radius: 24px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 20px 50px rgba(9, 5, 20, 0.9), 
+                        inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            text-align: center;
+            transform: translateY(0);
+            transition: transform var(--transition-speed);
+        }
+
+        h1 {
+            font-weight: 800;
+            font-size: 2.2rem;
+            background: linear-gradient(135deg, #f472b6, #c084fc, #38bdf8);
+            -webkit-background-type: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            letter-spacing: -1px;
+            filter: drop-shadow(0 2px 8px rgba(168, 85, 247, 0.3));
+        }
+
+        /* Seleção de Modo */
+        .mode-selector {
+            display: flex;
+            background: rgba(15, 10, 30, 0.7);
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(168, 85, 247, 0.15);
+        }
+
+        .mode-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #9ca3af;
+            padding: 0.6rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all var(--transition-speed);
+        }
+
+        .mode-btn.active {
+            background: var(--purple-neon);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
+        }
+
+        /* Placar de Pontuação */
+        .scoreboard {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+
+        .score-box {
+            background: rgba(15, 10, 30, 0.5);
+            padding: 0.7rem;
+            border-radius: 12px;
+            border: 1px solid rgba(168, 85, 247, 0.1);
+            transition: border-color var(--transition-speed);
+        }
+
+        .score-box.active-turn {
+            border-color: var(--purple-neon);
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.2);
+        }
+
+        .score-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #a78bfa;
+            margin-bottom: 0.25rem;
+        }
+
+        .score-value {
+            font-size: 1.3rem;
+            font-weight: 800;
+        }
+
+        #score-x { color: var(--magenta-neon); }
+        #score-o { color: var(--cyan-neon); }
+        #score-ties { color: #9ca3af; }
+
+        /* Mensagem de Turno */
+        .turn-indicator {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #d8b4fe;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 24px;
+        }
+
+        /* Tabuleiro */
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .cell {
+            aspect-ratio: 1;
+            background: rgba(15, 10, 30, 0.6);
+            border: 1px solid rgba(168, 85, 247, 0.15);
+            border-radius: 16px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cell::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .cell:hover {
+            transform: translateY(-2px);
+            background: rgba(30, 21, 55, 0.8);
+            border-color: var(--purple-neon);
+            box-shadow: 0 8px 20px rgba(168, 85, 247, 0.15);
+        }
+
+        .cell:hover::before {
+            opacity: 1;
+        }
+
+        /* Ícones Internos (X e O em SVG) */
+        .cell svg {
+            width: 55%;
+            height: 55%;
+            stroke-dasharray: 100;
+            stroke-dashoffset: 100;
+            animation: draw 0.4s forwards ease-out;
+        }
+
+        @keyframes draw {
+            to { stroke-dashoffset: 0; }
+        }
+
+        .cell.x svg {
+            stroke: var(--magenta-neon);
+            filter: drop-shadow(0 0 8px rgba(236, 72, 153, 0.6));
+        }
+
+        .cell.o svg {
+            stroke: var(--cyan-neon);
+            filter: drop-shadow(0 0 8px rgba(6, 182, 212, 0.6));
+        }
+
+        /* Destaque das células vencedoras */
+        .cell.winner-cell {
+            background: rgba(168, 85, 247, 0.2);
+            border-color: var(--purple-neon);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+
+        /* Botões de Controlo */
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            background: rgba(15, 10, 30, 0.7);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            color: #d8b4fe;
+            padding: 0.8rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            background: var(--purple-neon);
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--purple-neon) 0%, #8b5cf6 100%);
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            filter: brightness(1.1);
+        }
+
+        /* Painel Sobreposto de Vitória/Empate (Modal) */
+        .overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(9, 5, 20, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+            z-index: 10;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-purple);
+            border-radius: 24px;
+            padding: 2.5rem;
+            text-align: center;
+            max-width: 350px;
+            width: 90%;
+            transform: scale(0.8);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 40px rgba(168, 85, 247, 0.3);
+        }
+
+        .overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .modal-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-desc {
+            color: #9ca3af;
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .modal-btn {
+            width: 100%;
+            padding: 0.9rem;
+            font-size: 1rem;
+        }
+
+        /* Custom SVG no modal */
+        .winner-x-glow {
+            filter: drop-shadow(0 0 12px var(--magenta-neon));
+        }
+        .winner-o-glow {
+            filter: drop-shadow(0 0 12px var(--cyan-neon));
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-wrapper">
+        <h1>Jogo da Velha</h1>
+        
+        <!-- Seleção de Modo -->
+        <div class="mode-selector">
+            <button class="mode-btn active" id="mode-pvp" onclick="changeMode('pvp')">1 vs 1</button>
+            <button class="mode-btn" id="mode-pve" onclick="changeMode('pve')">vs Computador</button>
+        </div>
+
+        <!-- Placar de Pontos -->
+        <div class="scoreboard">
+            <div class="score-box active-turn" id="box-x">
+                <div class="score-label">Jogador X</div>
+                <div class="score-value" id="score-x">0</div>
+            </div>
+            <div class="score-box" id="box-ties">
+                <div class="score-label">Empates</div>
+                <div class="score-value" id="score-ties">0</div>
+            </div>
+            <div class="score-box" id="box-o">
+                <div class="score-label" id="label-o">Jogador O</div>
+                <div class="score-value" id="score-o">0</div>
+            </div>
+        </div>
+
+        <!-- Indicador de Turno -->
+        <div class="turn-indicator" id="turn-indicator">
+            Vez do Jogador X
+        </div>
+
+        <!-- Tabuleiro -->
+        <div class="board" id="board">
+            <div class="cell" data-index="0"></div>
+            <div class="cell" data-index="1"></div>
+            <div class="cell" data-index="2"></div>
+            <div class="cell" data-index="3"></div>
+            <div class="cell" data-index="4"></div>
+            <div class="cell" data-index="5"></div>
+            <div class="cell" data-index="6"></div>
+            <div class="cell" data-index="7"></div>
+            <div class="cell" data-index="8"></div>
+        </div>
+
+        <!-- Botões auxiliares -->
+        <div class="controls">
+            <button class="btn" onclick="resetScore()">Zerar Placar</button>
+            <button class="btn btn-primary" onclick="restartBoard()">Nova Partida</button>
+        </div>
+    </div>
+
+    <!-- Modal de Resultado -->
+    <div class="overlay" id="overlay">
+        <div class="modal">
+            <div class="modal-icon" id="modal-icon">
+                <!-- Injetado dinamicamente -->
+            </div>
+            <div class="modal-title" id="modal-title">Vencedor!</div>
+            <div class="modal-desc" id="modal-desc">Jogador X dominou o tabuleiro.</div>
+            <button class="btn btn-primary modal-btn" onclick="closeModal()">Jogar Novamente</button>
+        </div>
+    </div>
+
+    <script>
+        // Configurações do Jogo
+        let boardState = ["", "", "", "", "", "", "", "", ""];
+        let isGameActive = true;
+        let currentPlayer = "X"; // X começa sempre
+        let gameMode = "pvp"; // 'pvp' (1 vs 1) ou 'pve' (vs Inteligência Artificial)
+        
+        // Histórico de pontuação
+        let scores = {
+            X: 0,
+            O: 0,
+            ties: 0
+        };
+
+        // Elementos do DOM
+        const cells = document.querySelectorAll('.cell');
+        const turnIndicator = document.getElementById('turn-indicator');
+        const scoreXEl = document.getElementById('score-x');
+        const scoreOEl = document.getElementById('score-o');
+        const scoreTiesEl = document.getElementById('score-ties');
+        const boxX = document.getElementById('box-x');
+        const boxO = document.getElementById('box-o');
+        const overlay = document.getElementById('overlay');
+        const modalTitle = document.getElementById('modal-title');
+        const modalDesc = document.getElementById('modal-desc');
+        const modalIcon = document.getElementById('modal-icon');
+        const labelO = document.getElementById('label-o');
+
+        // Vetores de vitória
+        const winPatterns = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8], // Linhas
+            [0, 3, 6], [1, 4, 7], [2, 5, 8], // Colunas
+            [0, 4, 8], [2, 4, 6]             // Diagonais
+        ];
+
+        // SVGs das peças para renderização com animação
+        const svgX = `
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        `;
+
+        const svgO = `
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round">
+                <circle cx="12" cy="12" r="8"></circle>
+            </svg>
+        `;
+
+        // Atribui listeners aos quadrados do tabuleiro
+        cells.forEach(cell => {
+            cell.addEventListener('click', () => handleCellClick(cell));
+        });
+
+        // Alterna entre modo PvP (1v1) e PvE (Computador)
+        function changeMode(mode) {
+            if (gameMode === mode) return;
+            gameMode = mode;
+            
+            document.getElementById('mode-pvp').classList.toggle('active', mode === 'pvp');
+            document.getElementById('mode-pve').classList.toggle('active', mode === 'pve');
+            
+            labelO.textContent = mode === 'pve' ? 'Computador' : 'Jogador O';
+            
+            resetScore();
+            restartBoard();
+        }
+
+        // Lida com o clique nas casas
+        function handleCellClick(cell) {
+            const index = cell.getAttribute('data-index');
+
+            if (boardState[index] !== "" || !isGameActive) return;
+
+            // Bloquear clique se for a vez da IA (Computador)
+            if (gameMode === 'pve' && currentPlayer === 'O') return;
+
+            makeMove(index, cell);
+        }
+
+        // Regista a jogada fisicamente e no estado lógico
+        function makeMove(index, cell) {
+            boardState[index] = currentPlayer;
+            cell.innerHTML = currentPlayer === "X" ? svgX : svgO;
+            cell.classList.add(currentPlayer.toLowerCase());
+
+            if (checkWin(currentPlayer)) {
+                endGame(false);
+            } else if (checkTie()) {
+                endGame(true);
+            } else {
+                switchTurn();
+                
+                // Se o modo for contra o computador, aciona a IA
+                if (gameMode === 'pve' && currentPlayer === 'O' && isGameActive) {
+                    setTimeout(playComputer, 500); // pequeno atraso para realismo
+                }
+            }
+        }
+
+        // Troca o turno do jogador
+        function switchTurn() {
+            currentPlayer = currentPlayer === "X" ? "O" : "X";
+            turnIndicator.textContent = `Vez do Jogador ${currentPlayer}`;
+            
+            // Destaque visual no painel do placar correspondente
+            if (currentPlayer === "X") {
+                boxX.classList.add('active-turn');
+                boxO.classList.remove('active-turn');
+            } else {
+                boxO.classList.add('active-turn');
+                boxX.classList.remove('active-turn');
+            }
+        }
+
+        // Algoritmo de Inteligência Artificial para o Computador
+        function playComputer() {
+            let bestMove = getBestMove();
+            const cell = document.querySelector(`[data-index="${bestMove}"]`);
+            makeMove(bestMove, cell);
+        }
+
+        // Escolha de jogada (IA com tática simplificada: Bloqueia ou Ganha, senão joga inteligente)
+        function getBestMove() {
+            // 1. Tentar ganhar imediatamente
+            for (let i = 0; i < winPatterns.length; i++) {
+                const [a, b, c] = winPatterns[i];
+                if (boardState[a] === "O" && boardState[b] === "O" && boardState[c] === "") return c;
+                if (boardState[a] === "O" && boardState[c] === "O" && boardState[b] === "") return b;
+                if (boardState[b] === "O" && boardState[c] === "O" && boardState[a] === "") return a;
+            }
+
+            // 2. Bloquear o adversário "X" de ganhar
+            for (let i = 0; i < winPatterns.length; i++) {
+                const [a, b, c] = winPatterns[i];
+                if (boardState[a] === "X" && boardState[b] === "X" && boardState[c] === "") return c;
+                if (boardState[a] === "X" && boardState[c] === "X" && boardState[b] === "") return b;
+                if (boardState[b] === "X" && boardState[c] === "X" && boardState[a] === "") return a;
+            }
+
+            // 3. Tomar o centro se estiver vazio
+            if (boardState[4] === "") return 4;
+
+            // 4. Tomar um dos cantos vazios
+            const corners = [0, 2, 6, 8];
+            const emptyCorners = corners.filter(index => boardState[index] === "");
+            if (emptyCorners.length > 0) {
+                return emptyCorners[Math.floor(Math.random() * emptyCorners.length)];
+            }
+
+            // 5. Jogar em qualquer espaço restante disponível
+            const availableSpaces = boardState.map((val, idx) => val === "" ? idx : null).filter(val => val !== null);
+            return availableSpaces[Math.floor(Math.random() * availableSpaces.length)];
+        }
+
+        // Verifica condições de vitória
+        function checkWin(player) {
+            return winPatterns.some(pattern => {
+                const won = pattern.every(index => boardState[index] === player);
+                if (won) {
+                    // Adiciona classe de destaque às células que formaram o padrão vencedor
+                    pattern.forEach(idx => {
+                        cells[idx].classList.add('winner-cell');
+                    });
+                }
+                return won;
+            });
+        }
+
+        // Verifica empate
+        function checkTie() {
+            return boardState.every(cell => cell !== "");
+        }
+
+        // Finaliza o jogo e apresenta o resultado no modal estilizado
+        function endGame(isTie) {
+            isGameActive = false;
+
+            if (isTie) {
+                scores.ties++;
+                scoreTiesEl.textContent = scores.ties;
+                
+                modalTitle.textContent = "Empate!";
+                modalDesc.textContent = "Nenhum guerreiro conseguiu o alinhamento.";
+                modalIcon.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" style="width: 100%; height: 100%;">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="8" y1="15" x2="16" y2="15"></line>
+                        <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                        <line x1="15" y1="9" x2="15.01" y2="9"></line>
+                    </svg>
+                `;
+            } else {
+                scores[currentPlayer]++;
+                if (currentPlayer === "X") {
+                    scoreXEl.textContent = scores.X;
+                    modalTitle.textContent = "Vitória do X! 🎉";
+                    modalDesc.textContent = gameMode === 'pve' ? "Derrotaste o Computador com mestria!" : "O Jogador X dominou a partida.";
+                    modalIcon.innerHTML = `
+                        <div class="winner-x-glow" style="width: 100%; height: 100%;">
+                            ${svgX}
+                        </div>
+                    `;
+                } else {
+                    scoreOEl.textContent = scores.O;
+                    modalTitle.textContent = gameMode === 'pve' ? "Vitória do Computador! 🤖" : "Vitória do O! 🎉";
+                    modalDesc.textContent = gameMode === 'pve' ? "A IA superou a estratégia humana." : "O Jogador O conquistou a coroa.";
+                    modalIcon.innerHTML = `
+                        <div class="winner-o-glow" style="width: 100%; height: 100%;">
+                            ${svgO}
+                        </div>
+                    `;
+                }
+            }
+
+            // Exibe o modal
+            setTimeout(() => {
+                overlay.classList.add('active');
+            }, 600);
+        }
+
+        // Fecha o modal
+        function closeModal() {
+            overlay.classList.remove('active');
+            restartBoard();
+        }
+
+        // Reinicia apenas o tabuleiro da partida
+        function restartBoard() {
+            boardState = ["", "", "", "", "", "", "", "", ""];
+            isGameActive = true;
+            currentPlayer = "X";
+            
+            turnIndicator.textContent = "Vez do Jogador X";
+            boxX.classList.add('active-turn');
+            boxO.classList.remove('active-turn');
+
+            cells.forEach(cell => {
+                cell.innerHTML = "";
+                cell.className = "cell"; // Remove classes adicionais (x, o, winner-cell)
+            });
+        }
+
+        // Reseta todos os scores (X, O e Empates)
+        function resetScore() {
+            scores = { X: 0, O: 0, ties: 0 };
+            scoreXEl.textContent = "0";
+            scoreOEl.textContent = "0";
+            scoreTiesEl.textContent = "0";
+        }
+    </script>
+</body>
+</html>
