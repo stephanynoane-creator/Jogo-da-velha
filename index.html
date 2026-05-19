@@ -18,6 +18,17 @@
             --transition-speed: 0.3s;
         }
 
+        /* Tema Alternativo: Ciberpunk Ciano */
+        body.theme-cyber {
+            --bg-gradient: radial-gradient(circle at center, #05161e 0%, #01070a 100%);
+            --panel-bg: rgba(6, 26, 37, 0.6);
+            --border-purple: rgba(34, 211, 238, 0.3);
+            --purple-neon: #06b6d4;     /* Ciano */
+            --magenta-neon: #10b981;    /* Esmeralda */
+            --cyan-neon: #f59e0b;       /* Âmbar */
+            --text-glow: 0 0 10px rgba(6, 182, 212, 0.5);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -35,6 +46,7 @@
             align-items: center;
             padding: 1rem;
             overflow-x: hidden;
+            transition: background var(--transition-speed) ease;
         }
 
         /* Contentor Principal */
@@ -51,18 +63,26 @@
                         inset 0 1px 1px rgba(255, 255, 255, 0.1);
             text-align: center;
             transform: translateY(0);
-            transition: transform var(--transition-speed);
+            transition: transform var(--transition-speed), background var(--transition-speed), border-color var(--transition-speed);
         }
 
         h1 {
             font-weight: 800;
             font-size: 2.2rem;
             background: linear-gradient(135deg, #f472b6, #c084fc, #38bdf8);
-            -webkit-background-type: text;
+            -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 0.5rem;
             letter-spacing: -1px;
             filter: drop-shadow(0 2px 8px rgba(168, 85, 247, 0.3));
+            transition: background var(--transition-speed);
+        }
+
+        body.theme-cyber h1 {
+            background: linear-gradient(135deg, #10b981, #06b6d4, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 2px 8px rgba(6, 182, 212, 0.3));
         }
 
         /* Seleção de Modo */
@@ -71,8 +91,13 @@
             background: rgba(15, 10, 30, 0.7);
             border-radius: 12px;
             padding: 4px;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
             border: 1px solid rgba(168, 85, 247, 0.15);
+            transition: border-color var(--transition-speed);
+        }
+
+        body.theme-cyber .mode-selector {
+            border-color: rgba(6, 182, 212, 0.15);
         }
 
         .mode-btn {
@@ -93,6 +118,146 @@
             color: #ffffff;
             box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
         }
+        body.theme-cyber .mode-btn.active {
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
+        }
+
+        /* Painel de Configurações Dinâmicas */
+        .config-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            color: #a78bfa;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: color var(--transition-speed);
+        }
+
+        .config-toggle:hover {
+            color: #c084fc;
+        }
+
+        body.theme-cyber .config-toggle {
+            color: #22d3ee;
+        }
+        body.theme-cyber .config-toggle:hover {
+            color: #67e8f9;
+        }
+
+        .gear-icon {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            transition: transform 0.5s ease;
+        }
+
+        .config-toggle:hover .gear-icon {
+            transform: rotate(90deg);
+        }
+
+        .config-panel {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out, padding 0.4s ease-out, border-color var(--transition-speed);
+            background: rgba(15, 10, 30, 0.4);
+            border-radius: 16px;
+            margin-bottom: 0rem;
+            border: 1px solid transparent;
+            text-align: left;
+        }
+
+        .config-panel.open {
+            max-height: 350px;
+            padding: 1.2rem;
+            border-color: rgba(168, 85, 247, 0.15);
+            margin-bottom: 1.5rem;
+        }
+
+        body.theme-cyber .config-panel.open {
+            border-color: rgba(6, 182, 212, 0.15);
+        }
+
+        .config-group {
+            margin-bottom: 1rem;
+        }
+
+        .config-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .config-group label {
+            display: block;
+            font-size: 0.75rem;
+            color: #a78bfa;
+            margin-bottom: 0.4rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        body.theme-cyber .config-group label {
+            color: #22d3ee;
+        }
+
+        .config-group input {
+            width: 100%;
+            background: rgba(15, 10, 30, 0.8);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: 8px;
+            padding: 0.6rem;
+            color: #fff;
+            font-size: 0.9rem;
+            font-family: inherit;
+            transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+        }
+
+        body.theme-cyber .config-group input {
+            border-color: rgba(6, 182, 212, 0.2);
+        }
+
+        .config-group input:focus {
+            outline: none;
+            border-color: var(--purple-neon);
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.2);
+        }
+        body.theme-cyber .config-group input:focus {
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
+        }
+
+        .theme-options {
+            display: flex;
+            gap: 8px;
+        }
+
+        .theme-opt {
+            flex: 1;
+            background: rgba(15, 10, 30, 0.6);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            color: #9ca3af;
+            padding: 0.5rem;
+            font-size: 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all var(--transition-speed);
+        }
+
+        body.theme-cyber .theme-opt {
+            border-color: rgba(6, 182, 212, 0.2);
+        }
+
+        .theme-opt.active {
+            background: var(--purple-neon);
+            color: #fff;
+            border-color: var(--purple-neon);
+            box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);
+        }
+        body.theme-cyber .theme-opt.active {
+            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+        }
 
         /* Placar de Pontuação */
         .scoreboard {
@@ -107,12 +272,20 @@
             padding: 0.7rem;
             border-radius: 12px;
             border: 1px solid rgba(168, 85, 247, 0.1);
-            transition: border-color var(--transition-speed);
+            transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+        }
+
+        body.theme-cyber .score-box {
+            border-color: rgba(6, 182, 212, 0.1);
         }
 
         .score-box.active-turn {
             border-color: var(--purple-neon);
             box-shadow: 0 0 10px rgba(168, 85, 247, 0.2);
+        }
+
+        body.theme-cyber .score-box.active-turn {
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
         }
 
         .score-label {
@@ -121,6 +294,13 @@
             letter-spacing: 1px;
             color: #a78bfa;
             margin-bottom: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        body.theme-cyber .score-label {
+            color: #22d3ee;
         }
 
         .score-value {
@@ -145,6 +325,10 @@
             min-height: 24px;
         }
 
+        body.theme-cyber .turn-indicator {
+            color: #cffafe;
+        }
+
         /* Tabuleiro */
         .board {
             display: grid;
@@ -167,6 +351,10 @@
             overflow: hidden;
         }
 
+        body.theme-cyber .cell {
+            border-color: rgba(6, 182, 212, 0.15);
+        }
+
         .cell::before {
             content: '';
             position: absolute;
@@ -176,11 +364,20 @@
             transition: opacity 0.2s;
         }
 
+        body.theme-cyber .cell::before {
+            background: radial-gradient(circle, rgba(6, 182, 212, 0.15) 0%, transparent 70%);
+        }
+
         .cell:hover {
             transform: translateY(-2px);
             background: rgba(30, 21, 55, 0.8);
             border-color: var(--purple-neon);
             box-shadow: 0 8px 20px rgba(168, 85, 247, 0.15);
+        }
+
+        body.theme-cyber .cell:hover {
+            background: rgba(6, 26, 37, 0.8);
+            box-shadow: 0 8px 20px rgba(6, 182, 212, 0.15);
         }
 
         .cell:hover::before {
@@ -204,10 +401,16 @@
             stroke: var(--magenta-neon);
             filter: drop-shadow(0 0 8px rgba(236, 72, 153, 0.6));
         }
+        body.theme-cyber .cell.x svg {
+            filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.6));
+        }
 
         .cell.o svg {
             stroke: var(--cyan-neon);
             filter: drop-shadow(0 0 8px rgba(6, 182, 212, 0.6));
+        }
+        body.theme-cyber .cell.o svg {
+            filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.6));
         }
 
         /* Destaque das células vencedoras */
@@ -215,6 +418,10 @@
             background: rgba(168, 85, 247, 0.2);
             border-color: var(--purple-neon);
             animation: pulse 1.5s infinite;
+        }
+
+        body.theme-cyber .cell.winner-cell {
+            background: rgba(6, 182, 212, 0.2);
         }
 
         @keyframes pulse {
@@ -241,6 +448,11 @@
             transition: all 0.2s ease;
         }
 
+        body.theme-cyber .btn {
+            border-color: rgba(6, 182, 212, 0.3);
+            color: #cffafe;
+        }
+
         .btn:hover {
             background: var(--purple-neon);
             color: #ffffff;
@@ -248,10 +460,18 @@
             transform: translateY(-1px);
         }
 
+        body.theme-cyber .btn:hover {
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
+        }
+
         .btn-primary {
             background: linear-gradient(135deg, var(--purple-neon) 0%, #8b5cf6 100%);
             color: white;
             border: none;
+        }
+
+        body.theme-cyber .btn-primary {
+            background: linear-gradient(135deg, var(--purple-neon) 0%, #0891b2 100%);
         }
 
         .btn-primary:hover {
@@ -290,6 +510,10 @@
             transform: scale(0.8);
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             box-shadow: 0 10px 40px rgba(168, 85, 247, 0.3);
+        }
+
+        body.theme-cyber .modal {
+            box-shadow: 0 10px 40px rgba(6, 182, 212, 0.3);
         }
 
         .overlay.active .modal {
@@ -343,10 +567,38 @@
             <button class="mode-btn" id="mode-pve" onclick="changeMode('pve')">vs Computador</button>
         </div>
 
+        <!-- Botão das Configurações -->
+        <div class="config-toggle" onclick="toggleConfig()">
+            <svg class="gear-icon" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+            <span>Configurações & Temas</span>
+        </div>
+
+        <!-- Painel de Configurações Dinâmicas -->
+        <div class="config-panel" id="config-panel">
+            <div class="config-group">
+                <label>Tema de Jogo</label>
+                <div class="theme-options">
+                    <button class="theme-opt active" id="theme-purple" onclick="setTheme('purple')">Púrpura Neon</button>
+                    <button class="theme-opt" id="theme-cyber" onclick="setTheme('cyber')">Ciberpunk Ciano</button>
+                </div>
+            </div>
+            <div class="config-group">
+                <label>Nome do Jogador X</label>
+                <input type="text" id="input-name-x" value="Jogador X" oninput="updateNames()">
+            </div>
+            <div class="config-group">
+                <label id="label-input-o">Nome do Jogador O</label>
+                <input type="text" id="input-name-o" value="Jogador O" oninput="updateNames()">
+            </div>
+        </div>
+
         <!-- Placar de Pontos -->
         <div class="scoreboard">
             <div class="score-box active-turn" id="box-x">
-                <div class="score-label">Jogador X</div>
+                <div class="score-label" id="label-score-x">Jogador X</div>
                 <div class="score-value" id="score-x">0</div>
             </div>
             <div class="score-box" id="box-ties">
@@ -354,7 +606,7 @@
                 <div class="score-value" id="score-ties">0</div>
             </div>
             <div class="score-box" id="box-o">
-                <div class="score-label" id="label-o">Jogador O</div>
+                <div class="score-label" id="label-score-o">Jogador O</div>
                 <div class="score-value" id="score-o">0</div>
             </div>
         </div>
@@ -403,6 +655,11 @@
         let currentPlayer = "X"; // X começa sempre
         let gameMode = "pvp"; // 'pvp' (1 vs 1) ou 'pve' (vs Inteligência Artificial)
         
+        // Nomes Dinâmicos
+        let playerXName = "Jogador X";
+        let playerOName = "Jogador O";
+        let aiName = "Computador";
+
         // Histórico de pontuação
         let scores = {
             X: 0,
@@ -422,7 +679,14 @@
         const modalTitle = document.getElementById('modal-title');
         const modalDesc = document.getElementById('modal-desc');
         const modalIcon = document.getElementById('modal-icon');
-        const labelO = document.getElementById('label-o');
+        
+        // Elementos de Configuração
+        const configPanel = document.getElementById('config-panel');
+        const inputNameX = document.getElementById('input-name-x');
+        const inputNameO = document.getElementById('input-name-o');
+        const labelInputO = document.getElementById('label-input-o');
+        const labelScoreX = document.getElementById('label-score-x');
+        const labelScoreO = document.getElementById('label-score-o');
 
         // Vetores de vitória
         const winPatterns = [
@@ -450,6 +714,46 @@
             cell.addEventListener('click', () => handleCellClick(cell));
         });
 
+        // Alterna a visualização do painel de Configurações
+        function toggleConfig() {
+            configPanel.classList.toggle('open');
+        }
+
+        // Altera o tema geral do site
+        function setTheme(theme) {
+            document.getElementById('theme-purple').classList.toggle('active', theme === 'purple');
+            document.getElementById('theme-cyber').classList.toggle('active', theme === 'cyber');
+
+            if (theme === 'cyber') {
+                document.body.classList.add('theme-cyber');
+            } else {
+                document.body.classList.remove('theme-cyber');
+            }
+        }
+
+        // Atualiza os nomes dinâmicos baseados no input do utilizador
+        function updateNames() {
+            playerXName = inputNameX.value.trim() || "Jogador X";
+            if (gameMode === "pve") {
+                aiName = inputNameO.value.trim() || "Computador";
+            } else {
+                playerOName = inputNameO.value.trim() || "Jogador O";
+            }
+            renderLabels();
+        }
+
+        // Renderiza e sincroniza os nomes na interface visual
+        function renderLabels() {
+            labelScoreX.textContent = playerXName;
+            labelScoreO.textContent = gameMode === "pve" ? aiName : playerOName;
+
+            // Atualiza indicador de turno se o jogo estiver ativo
+            if (isGameActive) {
+                const currentName = currentPlayer === "X" ? playerXName : (gameMode === "pve" ? aiName : playerOName);
+                turnIndicator.textContent = `Vez de ${currentName}`;
+            }
+        }
+
         // Alterna entre modo PvP (1v1) e PvE (Computador)
         function changeMode(mode) {
             if (gameMode === mode) return;
@@ -458,10 +762,17 @@
             document.getElementById('mode-pvp').classList.toggle('active', mode === 'pvp');
             document.getElementById('mode-pve').classList.toggle('active', mode === 'pve');
             
-            labelO.textContent = mode === 'pve' ? 'Computador' : 'Jogador O';
+            if (mode === 'pve') {
+                labelInputO.textContent = 'Nome do Computador';
+                inputNameO.value = aiName;
+            } else {
+                labelInputO.textContent = 'Nome do Jogador O';
+                inputNameO.value = playerOName;
+            }
             
             resetScore();
             restartBoard();
+            renderLabels();
         }
 
         // Lida com o clique nas casas
@@ -499,7 +810,9 @@
         // Troca o turno do jogador
         function switchTurn() {
             currentPlayer = currentPlayer === "X" ? "O" : "X";
-            turnIndicator.textContent = `Vez do Jogador ${currentPlayer}`;
+            
+            const currentName = currentPlayer === "X" ? playerXName : (gameMode === "pve" ? aiName : playerOName);
+            turnIndicator.textContent = `Vez de ${currentName}`;
             
             // Destaque visual no painel do placar correspondente
             if (currentPlayer === "X") {
@@ -579,7 +892,7 @@
                 scoreTiesEl.textContent = scores.ties;
                 
                 modalTitle.textContent = "Empate!";
-                modalDesc.textContent = "Nenhum guerreiro conseguiu o alinhamento.";
+                modalDesc.textContent = "Nenhum guerreiro conseguiu o alinhamento de três símbolos.";
                 modalIcon.innerHTML = `
                     <svg viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-linecap="round" style="width: 100%; height: 100%;">
                         <circle cx="12" cy="12" r="10"></circle>
@@ -592,8 +905,8 @@
                 scores[currentPlayer]++;
                 if (currentPlayer === "X") {
                     scoreXEl.textContent = scores.X;
-                    modalTitle.textContent = "Vitória do X! 🎉";
-                    modalDesc.textContent = gameMode === 'pve' ? "Derrotaste o Computador com mestria!" : "O Jogador X dominou a partida.";
+                    modalTitle.textContent = `Vitória de ${playerXName}! 🎉`;
+                    modalDesc.textContent = gameMode === 'pve' ? `Derrotaste o ${aiName} com extrema mestria!` : `${playerXName} dominou esta partida.`;
                     modalIcon.innerHTML = `
                         <div class="winner-x-glow" style="width: 100%; height: 100%;">
                             ${svgX}
@@ -601,8 +914,9 @@
                     `;
                 } else {
                     scoreOEl.textContent = scores.O;
-                    modalTitle.textContent = gameMode === 'pve' ? "Vitória do Computador! 🤖" : "Vitória do O! 🎉";
-                    modalDesc.textContent = gameMode === 'pve' ? "A IA superou a estratégia humana." : "O Jogador O conquistou a coroa.";
+                    const opponentLabel = gameMode === 'pve' ? aiName : playerOName;
+                    modalTitle.textContent = `Vitória de ${opponentLabel}! 🎉`;
+                    modalDesc.textContent = gameMode === 'pve' ? `A IA (${aiName}) superou a tua estratégia desta vez.` : `${playerOName} conquistou a coroa nesta ronda.`;
                     modalIcon.innerHTML = `
                         <div class="winner-o-glow" style="width: 100%; height: 100%;">
                             ${svgO}
@@ -629,7 +943,7 @@
             isGameActive = true;
             currentPlayer = "X";
             
-            turnIndicator.textContent = "Vez do Jogador X";
+            turnIndicator.textContent = `Vez de ${playerXName}`;
             boxX.classList.add('active-turn');
             boxO.classList.remove('active-turn');
 
@@ -646,6 +960,9 @@
             scoreOEl.textContent = "0";
             scoreTiesEl.textContent = "0";
         }
+
+        // Setup inicial das legendas personalizadas no arranque
+        renderLabels();
     </script>
 </body>
 </html>
